@@ -1,0 +1,54 @@
+.signup {
+  background-color: rgb(18, 168, 33);
+  text-align: center;
+  width: 500px;
+  border-radius: 15px;
+  box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+h2 {
+  margin-block: 20px;
+}
+
+.email,
+.password,
+.username {
+  display: flex;
+  padding-block: 10px;
+  column-gap: 3px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.email p,
+.password p,
+.username p {
+  margin-block: 0;
+  padding-bottom: 5px;
+}
+
+input {
+  background: none;
+  border: none;
+  border-bottom: 1px solid black;
+}
+
+button {
+  margin-top: 15px;
+  background-color: rgb(84, 187, 84);
+  border: 1px solid green;
+  padding-block: 5px;
+  width: 175px;
+  height: 35px;
+  font-size: 19px;
+  border-radius: 10px;
+}
+
+.user-options {
+  padding-block: 25px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-inline: 15px;
+}

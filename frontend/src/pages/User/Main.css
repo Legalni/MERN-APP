@@ -1,0 +1,106 @@
+body {
+  background-color: #8ef0b79a;
+  text-align: center;
+}
+
+form button {
+  background-color: red;
+}
+
+.goods {
+  background-color: #00c853;
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 80px;
+  margin-inline: 15px;
+  border-radius: 15px;
+  border: 3px solid black;
+}
+
+.goods label {
+  font-size: 24px;
+  margin-top: 5px;
+}
+
+.goods input {
+  background-color: white;
+  height: 30px;
+  border-radius: 5px;
+  margin-left: 15px;
+}
+
+.goods button {
+  margin: 0;
+  background-color: darkgreen;
+  border: 1px solid green;
+  color: white;
+  width: 15rem;
+}
+
+.payment {
+  background-color: rgb(199, 99, 85);
+  display: grid;
+  grid-template-columns: 23% 52% 23.5%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 80px;
+  margin-inline: 15px;
+  border-radius: 15px;
+  border: 3px solid black;
+}
+
+.payment label {
+  font-size: 24px;
+  margin-top: 5px;
+}
+
+.payment input {
+  background-color: white;
+  height: 30px;
+  border-radius: 5px;
+  margin-left: 15px;
+}
+
+.payment button {
+  margin: 0;
+  background-color: rgb(255, 0, 0);
+  border: 2px solid black;
+  color: white;
+  width: 15rem;
+}
+
+.user-transactions {
+  margin-inline: 15px;
+  border-radius: 15px;
+  border: 3px solid black;
+  font-size: 24px;
+}
+
+.user-transactions header,
+.user-transactions footer {
+  background-color: #757575;
+  height: 45px;
+  color: white;
+}
+
+.user-transactions header {
+  margin-bottom: 25px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.user-transactions footer {
+  margin-top: 25px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.transaction {
+  background-color: #00c853;
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+}
