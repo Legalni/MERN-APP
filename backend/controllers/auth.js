@@ -1,8 +1,7 @@
-const User = require("../models/user");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
 const { validationResult } = require("express-validator");
+const User = require("../models/user");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 exports.login = async (req, res, next) => {
   const email = req.body.email;
@@ -33,7 +32,6 @@ exports.login = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
-    next(err);
   }
 };
 
@@ -68,6 +66,5 @@ exports.signup = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
-    next(err);
   }
 };

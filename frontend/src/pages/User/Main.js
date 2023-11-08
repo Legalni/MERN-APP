@@ -6,17 +6,37 @@ function MainPage(props) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    const expiryDate = localStorage.getItem("expiryDate");
+    const remainingMilliseconds =
+      new Date(expiryDate).getTime() - new Date().getTime();
+    if (!token || !expiryDate) {
+      return;
+    }
+    if (new Date(expiryDate) <= new Date()) {
+      props.onLogout();
+      return;
+    }
     fetch("http://localhost:8080/user/main", {
       headers: {
-        Authorization: "Bearer " + props.token,
+        Authorization: "Bearer " + token,
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error("Ne moze fetchovati usera.");
+        }
+        return res.json();
+      })
       .then((resData) => {
         setUser(resData.user);
       })
-      .catch((err) => console.log("aloo"));
-  }, [props.token]);
+      .catch((err) => console.log("nece fetch"));
+
+    setTimeout(() => {
+      props.onLogout();
+    }, remainingMilliseconds);
+  }, []);
 
   return (
     <>
@@ -24,9 +44,9 @@ function MainPage(props) {
         <>
           <h2>{user.username}</h2>
           <div>
-            <form>
+            <form onSubmit={props.onLogout}>
               <h2>Dug: 873033 din</h2>
-              <button>Odjavi se</button>
+              <button type="submit">Odjavi se</button>
             </form>
           </div>
           <div className="goods">

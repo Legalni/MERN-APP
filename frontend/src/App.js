@@ -10,37 +10,12 @@ function App() {
   const navigate = useNavigate();
 
   const [isAuth, setIsAuth] = useState(false);
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
 
   const logoutHandler = () => {
-    setToken(null);
-    setIsAuth(null);
     localStorage.removeItem("token");
     localStorage.removeItem("expiryDate");
-    localStorage.removeItem("userId");
+    navigate("/login");
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const expiryDate = localStorage.getItem("expiryDate");
-    if (!token || !expiryDate) {
-      return;
-    }
-    if (new Date(expiryDate) <= new Date()) {
-      logoutHandler();
-      return;
-    }
-    const userId = localStorage.getItem("userId");
-    const remainingMilliseconds =
-      new Date(expiryDate).getTime() - new Date().getTime();
-    setIsAuth(true);
-    setToken(token);
-    setUser(userId);
-    setTimeout(() => {
-      logoutHandler();
-    }, remainingMilliseconds);
-  }, []);
 
   const loginHandler = (event, authData) => {
     event.preventDefault();
@@ -67,10 +42,7 @@ function App() {
         })
         .then((resData) => {
           setIsAuth(true);
-          setUser(resData.userId);
-          setToken(resData.token);
           localStorage.setItem("token", resData.token);
-          localStorage.setItem("userId", resData.userId);
           const remainingMilliseconds = 60 * 60 * 1000;
           const expiryDate = new Date(
             new Date().getTime() + remainingMilliseconds
@@ -82,7 +54,6 @@ function App() {
         })
         .then(() => navigate("/main"))
         .catch((err) => {
-          console.log("Ne radi");
           setIsAuth(false);
         });
     }
@@ -135,7 +106,7 @@ function App() {
       {isAuth && <Route path="*" element={<Navigate to="/main" />} />}
       <Route path="/login" element={<Login onLogin={loginHandler} />} />
       <Route path="/signup" element={<SignupPage onSignup={signupHandler} />} />
-      <Route path="/main" element={<MainPage token={token} user={user} />} />
+      <Route path="/main" element={<MainPage onLogout={logoutHandler} />} />
     </Routes>
   );
 }
