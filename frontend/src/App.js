@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import "./App.css";
 import Login from "./pages/Auth/Login";
@@ -10,12 +10,6 @@ function App() {
   const navigate = useNavigate();
 
   const [isAuth, setIsAuth] = useState(false);
-
-  const logoutHandler = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("expiryDate");
-    navigate("/login");
-  };
 
   const loginHandler = (event, authData) => {
     event.preventDefault();
@@ -42,20 +36,15 @@ function App() {
         })
         .then((resData) => {
           setIsAuth(true);
-          localStorage.setItem("token", resData.token);
-          const remainingMilliseconds = 60 * 60 * 1000;
-          const expiryDate = new Date(
-            new Date().getTime() + remainingMilliseconds
-          );
-          localStorage.setItem("expiryDate", expiryDate.toISOString());
-          setTimeout(() => {
-            logoutHandler();
-          }, remainingMilliseconds);
+          const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
+          document.cookie = `token=${resData.token}; expires=${expires}; path='/'`;
         })
         .then(() => navigate("/main"))
         .catch((err) => {
           setIsAuth(false);
         });
+    } else {
+      console.log("netacni");
     }
   };
 
@@ -98,6 +87,23 @@ function App() {
           setIsAuth(false);
         });
     }
+  };
+
+  const logoutHandler = (event, token) => {
+    event.preventDefault();
+
+    fetch("http://localhost:8080/user/logout", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => res.json())
+      .then(() => {
+        document.cookie = "token=; Max-Age=0; path=/";
+        navigate("/login");
+      })
+      .catch((err) => console.log("Ne mozete se izlogovati"));
   };
 
   return (

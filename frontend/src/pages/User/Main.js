@@ -5,37 +5,26 @@ import "./Main.css";
 function MainPage(props) {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const expiryDate = localStorage.getItem("expiryDate");
-    const remainingMilliseconds =
-      new Date(expiryDate).getTime() - new Date().getTime();
-    if (!token || !expiryDate) {
-      return;
-    }
-    if (new Date(expiryDate) <= new Date()) {
-      props.onLogout();
-      return;
-    }
-    fetch("http://localhost:8080/user/main", {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error("Ne moze fetchovati usera.");
-        }
-        return res.json();
-      })
-      .then((resData) => {
-        setUser(resData.user);
-      })
-      .catch((err) => console.log("nece fetch"));
+  const token = document.cookie.split("=")[1];
 
-    setTimeout(() => {
-      props.onLogout();
-    }, remainingMilliseconds);
+  useEffect(() => {
+    if (token) {
+      fetch("http://localhost:8080/user/main", {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+        .then((res) => {
+          if (res.status !== 200) {
+            throw new Error("Ne moze fetchovati usera.");
+          }
+          return res.json();
+        })
+        .then((resData) => {
+          setUser(resData.user);
+        })
+        .catch((err) => console.log("nece fetch"));
+    }
   }, []);
 
   return (
@@ -44,9 +33,15 @@ function MainPage(props) {
         <>
           <h2>{user.username}</h2>
           <div>
-            <form onSubmit={props.onLogout}>
+            <form>
               <h2>Dug: 873033 din</h2>
-              <button type="submit">Odjavi se</button>
+              <button
+                onClick={(e) => {
+                  props.onLogout(e, token);
+                }}
+              >
+                Odjavi se
+              </button>
             </form>
           </div>
           <div className="goods">

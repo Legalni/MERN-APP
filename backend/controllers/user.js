@@ -1,8 +1,7 @@
 const User = require("../models/user");
 
 exports.getUserInformations = async (req, res, next) => {
-  console.log(req.get("Authorization"));
-
+  console.log(req.cookies);
   try {
     const user = await User.findById(req.userId);
 

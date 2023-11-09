@@ -2,6 +2,8 @@ const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
 
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
@@ -9,9 +11,13 @@ const userRoutes = require("./routes/user");
 const app = express();
 
 const MONGODB_URI =
-  "mongodb+srv://***:*****.@atlascluster.ze95moh.mongodb.net/agriculture?retryWrites=true&w=majority";
+  "mongodb+srv://filip:Necesdobiti1.@atlascluster.ze95moh.mongodb.net/agriculture?retryWrites=true&w=majority";
 
+app.use(helmet());
 app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");

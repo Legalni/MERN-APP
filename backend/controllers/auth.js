@@ -1,6 +1,6 @@
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 exports.login = async (req, res, next) => {
@@ -26,8 +26,21 @@ exports.login = async (req, res, next) => {
       "somesupersecretsecret",
       { expiresIn: "1h" }
     );
-
-    res.status(200).json({ userId: currentUser._id.toString(), token: token });
+    console.log(token);
+    res
+      .status(200)
+      .cookie("token", token, {
+        maxAge: 3600000,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production" ? true : false,
+        sameSite: "None",
+        path: "/",
+      })
+      .json({
+        userId: currentUser._id.toString(),
+        token: token,
+      });
+    console.log(req.cookies);
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
