@@ -11,7 +11,7 @@ const userRoutes = require("./routes/user");
 const app = express();
 
 const MONGODB_URI =
-  "mongodb+srv://filip:Necesdobiti1.@atlascluster.ze95moh.mongodb.net/agriculture?retryWrites=true&w=majority";
+  "mongodb+srv://****:*****.@atlascluster.ze95moh.mongodb.net/agriculture?retryWrites=true&w=majority";
 
 app.use(helmet());
 app.use(bodyParser.json());
