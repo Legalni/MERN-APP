@@ -1,13 +1,12 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-
-import "./Login.css";
-
-import Auth from "./Auth";
-import { required, length, isEmail } from "../../util/validators";
 import Input from "../../components/Input";
+import Auth from "../Auth/Auth";
+import { useState } from "react";
+import { required, length, isEmail } from "../../util/validators";
 
-function Login(props) {
+import "./AdminLogin.css";
+
+const AdminLogin = (props) => {
   const initialEmail = {
     value: "",
     valid: false,
@@ -50,15 +49,12 @@ function Login(props) {
 
   return (
     <Auth>
-      <a className="admin-link" href="admin/login">
-        Admin
-      </a>
-      <div className="login">
-        <h2>Prijavite se</h2>
+      <div className="admin-login">
+        <h2>Admin Prijava</h2>
         {props.error && <p className="error">{props.error}</p>}
         <form
           onSubmit={(e) => {
-            props.onLogin(e, { email, password });
+            props.onLogin(e, { email, password }, true);
           }}
         >
           <Input
@@ -79,13 +75,13 @@ function Login(props) {
           />
           <button>Prijavi se</button>
         </form>
-        <div className="user-options">
-          <Link to="/signup">Registrujte se</Link>
-          <Link to="/change-informations">Promena podataka</Link>
+        <div className="user-login">
+          <p>
+            Niste admin?<Link to="/login">Prijava za korisnike</Link>
+          </p>
         </div>
       </div>
     </Auth>
   );
-}
-
-export default Login;
+};
+export default AdminLogin;

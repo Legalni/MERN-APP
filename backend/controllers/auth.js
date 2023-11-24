@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
+const Admin = require("../models/admin");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -10,12 +11,16 @@ exports.login = async (req, res, next) => {
   try {
     const user = await User.findOne({ email: email });
     if (!user) {
-      throw new Error("Ne postoji korisnik sa ovim e-mailom.");
+      const error = new Error("Ne postoji korisnik sa ovim e-mailom.");
+      error.statusCode = 404;
+      throw error;
     }
     currentUser = user;
     const isEqual = await bcrypt.compare(password, user.password);
     if (!isEqual) {
-      throw new Error("Pogresna lozinka.");
+      const error = new Error("Uneli ste pogresnu lozinku");
+      error.statusCode = 401;
+      throw error;
     }
 
     const token = jwt.sign(
@@ -26,21 +31,18 @@ exports.login = async (req, res, next) => {
       "somesupersecretsecret",
       { expiresIn: "1h" }
     );
-    console.log(token);
+
     res
       .status(200)
       .cookie("token", token, {
-        maxAge: 3600000,
+        expires: new Date(Date.now() + 360000),
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production" ? true : false,
         sameSite: "None",
-        path: "/",
       })
       .json({
         userId: currentUser._id.toString(),
         token: token,
       });
-    console.log(req.cookies);
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -81,3 +83,51 @@ exports.signup = async (req, res, next) => {
     }
   }
 };
+
+exports.adminLogin = async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  let currentAdmin;
+  try {
+    const admin = await Admin.findOne({ email: email });
+    if (!admin) {
+      const error = new Error("Ne postoji korisnik sa ovim e-mailom.");
+      error.statusCode = 404;
+      throw error;
+    }
+    currentAdmin = admin;
+    const isEqual = await bcrypt.compare(password, admin.password);
+    if (!isEqual) {
+      const error = new Error("Uneli ste pogresnu lozinku");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const token = jwt.sign(
+      {
+        email: currentAdmin.email,
+        userId: currentAdmin._id.toString(),
+      },
+      "somesupersecretsecret",
+      { expiresIn: "1h" }
+    );
+
+    res
+      .status(200)
+      .cookie("token", token, {
+        expires: 3600000,
+        httpOnly: true,
+        SameSite: "None",
+      })
+      .json({
+        userId: currentAdmin._id.toString(),
+        token: token,
+      });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+  }
+};
+
+const generateToken = async (user, statusCode, res) => {};

@@ -1,13 +1,4 @@
-.admin-link {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin-top: 10px;
-  margin-right: 10px;
-  color: rgb(188, 241, 188);
-}
-
-.login {
+.admin-login {
   background-color: rgb(18, 168, 33);
   text-align: center;
   width: 500px;
@@ -15,15 +6,15 @@
   box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
 }
 
-.login {
+.admin-login {
   text-align: center;
 }
 
-.login label {
-  margin-bottom: 10px;
+.admin-login h2 {
+  margin-block: 20px;
 }
 
-.login button {
+.admin-login button {
   margin-top: 15px;
   background-color: rgb(84, 187, 84);
   border: 1px solid green;
@@ -34,15 +25,13 @@
   border-radius: 10px;
 }
 
-.user-options {
+.user-login {
+  text-align: center;
   padding-block: 25px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
   padding-inline: 15px;
 }
 
-.user-options a {
+.user-login a {
   color: rgb(188, 241, 188);
 }
 

@@ -36,4 +36,13 @@ router.post(
   authController.login
 );
 
+router.post(
+  "/admin-login",
+  [
+    body("email").trim().isEmail(),
+    body("password").trim().isLength({ min: 5 }),
+  ],
+  authController.adminLogin
+);
+
 module.exports = router;

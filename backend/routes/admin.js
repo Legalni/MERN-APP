@@ -1,13 +1,11 @@
 const express = require("express");
 
 const isAuth = require("../middleware/is-auth");
-const userController = require("../controllers/user");
+const adminController = require("../controllers/admin");
 
 const router = express.Router();
 
-router.get("/main", isAuth, userController.getUserInformations);
-
-router.post("/add-transaction", isAuth, userController.postTransaction);
+router.get("/main", isAuth, adminController.getAdminInformations);
 
 router.post("/logout", isAuth, (req, res, next) => {
   return res
