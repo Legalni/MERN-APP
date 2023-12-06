@@ -9,6 +9,8 @@ router.get("/main", isAuth, userController.getUserInformations);
 
 router.post("/add-transaction", isAuth, userController.postTransaction);
 
+router.get("/transactions", isAuth, userController.getTransactions);
+
 router.post("/logout", isAuth, (req, res, next) => {
   return res
     .status(200)

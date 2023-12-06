@@ -6,7 +6,7 @@
   box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
 }
 
-h2 {
+.signup h2 {
   margin-block: 20px;
 }
 
@@ -28,13 +28,13 @@ h2 {
   padding-bottom: 5px;
 }
 
-input {
+.signup input {
   background: none;
   border: none;
   border-bottom: 1px solid black;
 }
 
-button {
+.signup button {
   margin-top: 15px;
   background-color: rgb(84, 187, 84);
   border: 1px solid green;

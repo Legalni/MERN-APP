@@ -2,19 +2,33 @@
   background-color: red;
   color: white;
   width: 15rem;
+  height: 35px;
   border: 2px solid black;
+  border-radius: 10px;
   position: absolute;
   margin-top: 0px;
   top: 10px;
   left: 10px;
+  font-size: 18px;
+  z-index: 1;
 }
 
 .show-requests button {
+  background-color: rgb(0 200 83);
+  height: 35px;
+  font-size: 18px;
+  width: 13rem;
   position: absolute;
   margin-top: 0px;
   top: 10px;
   right: 10px;
   border-radius: 5px;
+  cursor: pointer;
+}
+
+.show-requests button.expanded {
+  height: 45px;
+  background-color: red;
 }
 
 .progress-bar {
@@ -28,7 +42,7 @@
 }
 
 .progress-bar-value {
-  width: 200%;
+  /* width: 200%; */
   height: 100%;
   background-color: red;
   animation: indeterminateAnimation 3s infinite linear;
@@ -75,6 +89,9 @@
   background-color: darkgreen;
   height: 35px;
   color: white;
+  width: 14rem;
+  border-radius: 15px;
+  font-size: 16px;
 }
 
 .user-form a {
@@ -85,7 +102,7 @@
 .users {
   display: grid;
   grid-template-columns: 20% 20% 20% 20% 20%;
-  text-align: start;
+  text-align: center;
   margin-inline: 10px;
 }
 
@@ -93,7 +110,7 @@
   display: flex;
   justify-content: center;
   background-color: #00c853;
-  width: 200px;
+  width: 310px;
   height: 70px;
   text-align: center;
   font-size: 24px;
@@ -102,11 +119,53 @@
   border-radius: 10px;
   border: 2px solid darkgreen;
   cursor: pointer;
+  margin-bottom: 20px;
 }
 
 .user a {
   color: black;
   text-decoration: none;
-  padding-inline: 10px;
-  padding-block: 18px;
+  padding-inline: 62.7px;
+  padding-block: 10px;
+}
+
+.requestsContainer {
+  background-color: rgb(144 238 144);
+  width: 70rem;
+  border: 4px solid black;
+  border-radius: 10px;
+  position: absolute;
+  right: 10px;
+  top: 50px;
+  z-index: 66;
+}
+
+.paymentRequest,
+.goodsRequest {
+  margin-inline: 10px;
+  display: grid;
+  grid-template-columns: 18% 17% 16% 17% 16% 16%;
+  text-align: center;
+  align-items: center;
+  margin-block: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  font-weight: bolder;
+}
+
+.paymentRequest {
+  background-color: rgb(211, 94, 61);
+}
+
+.goodsRequest {
+  background-color: rgb(0 200 83);
+}
+
+.confirmRequest,
+.declineRequest {
+  background-color: white;
+  width: 100px;
+  height: 35px;
+  border-radius: 5px;
+  margin: auto;
 }

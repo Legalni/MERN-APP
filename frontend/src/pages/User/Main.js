@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
 import "./Main.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useResolvedPath } from "react-router-dom";
 
 function MainPage(props) {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const goodsRef = useRef();
   const quantityRef = useRef();
   const priceRef = useRef();
@@ -12,58 +13,48 @@ function MainPage(props) {
 
   const navigate = useNavigate();
 
-  const token = document.cookie.split("=")[1];
-
   useEffect(() => {
-    if (token) {
-      fetch("http://localhost:8080/user/main", {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
+    fetch("http://localhost:8080/user/main", {
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error("Ne moze fetchovati usera.");
+        }
+        return res.json();
       })
-        .then((res) => {
-          if (res.status !== 200) {
-            throw new Error("Ne moze fetchovati usera.");
-          }
-          return res.json();
-        })
-        .then((resData) => {
-          setUser(resData.user);
-          console.log(token);
-        })
-        .catch((err) => console.log("nece fetch"));
-    } else {
-      navigate("/login");
-    }
-  }, [token, navigate]);
+      .then((resData) => {
+        setUser(resData.user);
+        setToken(resData.token);
+      })
+      .catch((err) => console.log("nece fetch"));
+  }, []);
 
   const addPaymentTransactionHandler = (event) => {
     event.preventDefault();
 
     const paymentPrice = paymentRef.current.value;
 
-    if (token) {
-      fetch("http://localhost:8080/user/add-transaction", {
-        method: "POST",
-        headers: {
-          Authorization: "Bearer " + token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          price: paymentPrice,
-        }),
+    fetch("http://localhost:8080/user/add-transaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        price: paymentPrice,
+      }),
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error("Nije uspelo dodavanje transakcije.");
+        }
+        return res.json();
       })
-        .then((res) => {
-          if (res.status !== 200) {
-            throw new Error("Nije uspelo dodavanje transakcije.");
-          }
-          return res.json();
-        })
-        .then((resData) => {
-          console.log(resData);
-        })
-        .catch((err) => console.log("nece fetch"));
-    }
+      .then((resData) => {
+        paymentRef.current.value = null;
+      })
+      .catch((err) => console.log("nece fetch"));
   };
 
   const addGoodsTransactionHandler = (event) => {
@@ -73,43 +64,43 @@ function MainPage(props) {
     const quantity = quantityRef.current.value;
     const price = priceRef.current.value;
 
-    if (token) {
-      fetch("http://localhost:8080/user/add-transaction", {
-        method: "POST",
-        headers: {
-          Authorization: "Bearer " + token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          goods: goods,
-          quantity: quantity,
-          price: price,
-        }),
+    fetch("http://localhost:8080/user/add-transaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        goods: goods,
+        quantity: quantity,
+        price: price,
+      }),
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error("Nije uspelo dodavanje transakcije.");
+        }
+        return res.json();
       })
-        .then((res) => {
-          if (res.status !== 200) {
-            throw new Error("Nije uspelo dodavanje transakcije.");
-          }
-          return res.json();
-        })
-        .then((resData) => {
-          console.log(resData);
-        })
-        .catch((err) => console.log("nece fetch"));
-    }
+      .then((resData) => {
+        goodsRef.current.value = null;
+        quantityRef.current.value = null;
+        priceRef.current.value = null;
+      })
+      .catch((err) => console.log("nece fetch"));
   };
 
   return (
     <>
       {user && (
         <>
-          <h2>{user.username}</h2>
+          <h2>Korisnik: {user.username}</h2>
           <div>
-            <form>
+            <form className="userLogout">
               <h2>Dug: 873033 din</h2>
               <button
                 onClick={(e) => {
-                  props.onLogout(e, token);
+                  props.onLogout(e);
                 }}
               >
                 Odjavi se
@@ -147,14 +138,28 @@ function MainPage(props) {
             </div>
           </form>
           <div className="user-transactions">
-            <header>subota, 10.jun 2023.</header>
-            <div className="transaction">
-              <p>Roba: 2</p>
-              <p>Cena: 1 din</p>
-              <p>Kolicina: 1x</p>
-              <p>Dug: 1 din</p>
-            </div>
-            <footer>Dug za ovaj Dan: 61735</footer>
+            <header>
+              <p>subota, 10.jun 2023.</p>
+            </header>
+            {user.transactions.map((transaction) => {
+              return transaction.hasOwnProperty("goods") ? (
+                <div key={transaction._id} className="goodsTransaction">
+                  <p>Roba: {transaction.goods}</p>
+                  <p>Cena: {transaction.price} din</p>
+                  <p>Kolicina: {transaction.quantity} x</p>
+                  <p>Dug: {transaction.debt} din</p>
+                </div>
+              ) : (
+                <div key={transaction._id} className="paymentTransaction">
+                  <p>Uplata</p>
+                  <p></p>
+                  <p>{transaction.debt} din</p>
+                </div>
+              );
+            })}
+            <footer>
+              <p>Dug za ovaj Dan: 61735</p>
+            </footer>
           </div>
         </>
       )}

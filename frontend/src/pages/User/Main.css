@@ -3,8 +3,13 @@ body {
   text-align: center;
 }
 
-form button {
+body h2 {
+  font-size: 26px;
+}
+
+.userLogout button {
   background-color: red;
+  margin-bottom: 25px;
 }
 
 .goods {
@@ -16,6 +21,7 @@ form button {
   text-align: center;
   height: 80px;
   margin-inline: 15px;
+  margin-bottom: 20px;
   border-radius: 15px;
   border: 3px solid black;
 }
@@ -33,11 +39,18 @@ form button {
 }
 
 .goods button {
-  margin: 0;
   background-color: darkgreen;
-  border: 1px solid green;
+}
+
+.goods button,
+.payment button,
+.userLogout button {
+  height: 35px;
+  border-radius: 10px;
+  border: 2px solid black;
   color: white;
   width: 15rem;
+  font-size: 18px;
 }
 
 .payment {
@@ -49,6 +62,7 @@ form button {
   text-align: center;
   height: 80px;
   margin-inline: 15px;
+  margin-bottom: 20px;
   border-radius: 15px;
   border: 3px solid black;
 }
@@ -66,11 +80,7 @@ form button {
 }
 
 .payment button {
-  margin: 0;
   background-color: rgb(255, 0, 0);
-  border: 2px solid black;
-  color: white;
-  width: 15rem;
 }
 
 .user-transactions {
@@ -87,6 +97,12 @@ form button {
   color: white;
 }
 
+.user-transactions header p,
+.user-transactions footer p {
+  padding-top: 5px;
+  margin-top: 0;
+}
+
 .user-transactions header {
   margin-bottom: 25px;
   border-top-left-radius: 10px;
@@ -99,8 +115,22 @@ form button {
   border-bottom-right-radius: 10px;
 }
 
-.transaction {
+.goodsTransaction {
   background-color: #00c853;
   display: grid;
   grid-template-columns: 25% 25% 25% 25%;
+  margin-inline: 3px;
+  border: 2px solid black;
+  font-weight: 550;
+  margin-bottom: 5px;
+}
+
+.paymentTransaction {
+  background-color: rgb(199, 99, 85);
+  display: grid;
+  grid-template-columns: 45% 10% 45%;
+  margin-inline: 3px;
+  border: 2px solid black;
+  font-weight: 550;
+  margin-bottom: 5px;
 }

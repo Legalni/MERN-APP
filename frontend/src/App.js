@@ -6,87 +6,28 @@ import AdminMain from "./pages/Admin/AdminMain";
 import SignupPage from "./pages/Auth/Signup";
 import MainPage from "./pages/User/Main";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
+import UserProfile from "./pages/Admin/UserProfile";
+import Transactions from "./pages/Admin/Transactions";
 
 function App() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
 
-  const logoutHandler = (event, token, admin = false) => {
+  const logoutHandler = (event, admin = false) => {
     event.preventDefault();
 
     const permission = admin ? "admin" : "user";
 
     fetch(`http://localhost:8080/${permission}/logout`, {
       method: "POST",
-      headers: {
-        Authorization: "Bearer " + token,
-      },
+      credentials: "include",
     })
       .then((res) => res.json())
-      .then(() => {
-        document.cookie = "token=; Max-Age=0; path=/";
-      })
       .then(() => {
         navigate(admin ? "/admin/login" : "/login");
       })
       .catch((err) => console.log("Ne mozete se izlogovati"));
   };
-
-  // const adminLoginHandler = (event, authData) => {
-  //   event.preventDefault();
-
-  //   if (!authData.email.valid && !authData.password.valid) {
-  //     setError("Uneti podaci nisu tacni");
-  //     return;
-  //   }
-  //   if (!authData.email.valid) {
-  //     setError("Unesite ispravnu e-mail adresu");
-  //     return;
-  //   }
-  //   if (!authData.password.valid) {
-  //     setError("Unesite ispravnu lozinku");
-  //     return;
-  //   }
-
-  //   fetch("http://localhost:8080/auth/admin-login", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       email: authData.email.value,
-  //       password: authData.password.value,
-  //     }),
-  //   })
-  //     .then((res) => {
-  //       console.log(res);
-  //       if (res.status === 404) {
-  //         console.log("NemaS");
-  //       }
-
-  //       if (res.status === 422) {
-  //         throw new Error("Validacija nije uspela.");
-  //       }
-  //       if (res.status !== 200 && res.status !== 201) {
-  //         throw new Error("Ne mozemo vas autentikovati");
-  //       }
-  //       return res.json();
-  //     })
-  //     .then((resData) => {
-  //       const time = 60 * 60 * 1000;
-  //       const expires = new Date(Date.now() + time).toUTCString();
-  //       document.cookie = `token=${resData.token}; expires=${expires}; path='/'`;
-  //       setError(null);
-  //       setTimeout(() => {
-  //         logoutHandler(event, resData.token, true);
-  //         navigate("/admin/login");
-  //       }, time);
-  //     })
-  //     .then(() => navigate("/admin/allUsers"))
-  //     .catch((err) => {
-  //       console.log(err.message);
-  //     });
-  // };
 
   const loginHandler = (event, authData, admin = false) => {
     event.preventDefault();
@@ -118,7 +59,6 @@ function App() {
       credentials: "include",
     })
       .then((res) => {
-        console.log(res);
         if (res.status === 404) {
         }
 
@@ -131,16 +71,9 @@ function App() {
         return res.json();
       })
       .then((resData) => {
-        const time = 60 * 60 * 1000;
-        const expires = new Date(Date.now() + time).toUTCString();
-        // document.cookie = `token=${resData.token}; expires=${expires}; path='/'`;
         setError(null);
-        // setTimeout(() => {
-        //   logoutHandler(event, resData.token, admin ? true : false);
-        //   navigate(admin ? "/admin/login" : "/login");
-        // }, time);
+        navigate(admin ? "/admin/allUsers" : "/main");
       })
-      .then(() => navigate(admin ? "/admin/allUsers" : "/main"))
       .catch((err) => {
         console.log(err.message);
       });
@@ -191,7 +124,17 @@ function App() {
         path="/"
         exact
         element={
-          document.cookie ? <Navigate to="/main" /> : <Navigate to="/login" />
+          <Navigate to="/login" />
+          // (isLoggedIn && authRole === "admin" ? (
+          //   <Navigate to="/admin/allUsers" />
+          // ) : (
+          //   <Navigate to="/login" />
+          // )) ||
+          // (isLoggedIn && authRole === "user" ? (
+          //   <Navigate to="/main" />
+          // ) : (
+          //   <Navigate to="/login" />
+          // ))
         }
       />
       <Route
@@ -208,6 +151,8 @@ function App() {
         path="/admin/allUsers"
         element={<AdminMain onLogout={logoutHandler} />}
       />
+      <Route path="/admin/user/:username" element={<UserProfile />} />
+      <Route path="/admin/transactions" element={<Transactions />} />
     </Routes>
   );
 }

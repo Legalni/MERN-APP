@@ -1,9 +1,9 @@
-const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const csrf = require("csurf");
 
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
@@ -14,14 +14,19 @@ const app = express();
 const MONGODB_URI =
   "mongodb+srv://filip:Necesdobiti1.@atlascluster.ze95moh.mongodb.net/agriculture?retryWrites=true&w=majority";
 
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+// const csrfProtection = csrf({
+//   cookie: true,
+// });
+
+// app.use(csrfProtection);
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "OPTIONS, GET, POST, PUT, PATCH, DELETE"
@@ -29,6 +34,10 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+
+// app.get("/getCSRFToken", (req, res, next) => {
+//   res.json({ CSRFToken: req.CSRFToken() });
+// });
 
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);

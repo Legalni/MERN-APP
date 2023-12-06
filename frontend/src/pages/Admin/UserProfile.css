@@ -1,0 +1,154 @@
+.goodsForm {
+  background-color: #00c853;
+  display: grid;
+  grid-template-columns: 25% 25% 25% 25%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 70px;
+  margin-inline: 15px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  border: 3px solid black;
+}
+
+.goodsForm div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.goodsForm label {
+  font-size: 22px;
+}
+
+.goodsForm input {
+  background-color: white;
+  height: 30px;
+  border-radius: 5px;
+  margin-left: 15px;
+}
+
+.goodsForm button {
+  background-color: darkgreen;
+}
+
+.goodsForm button,
+.paymentForm button {
+  margin: auto;
+  height: 30px;
+  width: 220px;
+  color: white;
+  border: 2px solid black;
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 20px;
+}
+
+.paymentForm {
+  background-color: rgb(199, 99, 85);
+  display: grid;
+  grid-template-columns: 23% 52% 23.5%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 70px;
+  margin-inline: 15px;
+  margin-bottom: 20px;
+  border-radius: 15px;
+  border: 3px solid black;
+}
+
+.paymentForm div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paymentForm label {
+  font-size: 22px;
+}
+
+.paymentForm input {
+  background-color: white;
+  height: 30px;
+  border-radius: 5px;
+  margin-left: 15px;
+}
+
+.paymentForm button {
+  background-color: red;
+}
+
+.hrefs {
+  display: grid;
+  grid-template-columns: 33% 34% 33%;
+  margin-inline: 15px;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.main-page,
+.delete-profile,
+.all-transactions {
+  width: 220px;
+  padding-block: 12px;
+  color: white;
+  text-decoration: none;
+  border: 2px solid black;
+  border-radius: 10px;
+  margin: auto;
+}
+
+.main-page,
+.all-transactions {
+  background-color: green;
+}
+
+.deleteForm {
+  width: 220px;
+  text-align: center;
+  align-items: center;
+  margin: auto;
+}
+
+.delete-profile {
+  font-size: 18px;
+  background-color: red;
+  cursor: pointer;
+}
+
+.goodsUserTransaction {
+  background-color: #00c853;
+  display: grid;
+  grid-template-columns: 20% 20% 20% 20% 20%;
+  margin-inline: 3px;
+  border: 2px solid black;
+  font-weight: 550;
+  margin-bottom: 5px;
+}
+
+.paymentUserTransaction {
+  background-color: rgb(199, 99, 85);
+  display: grid;
+  grid-template-columns: 20% 20% 20% 20% 20%;
+  margin-inline: 3px;
+  border: 2px solid black;
+  font-weight: 550;
+  margin-bottom: 5px;
+}
+
+.paymentUserTransaction button,
+.goodsUserTransaction button {
+  height: 30px;
+  width: 220px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin: auto;
+  cursor: pointer;
+}

@@ -59,3 +59,12 @@ exports.postTransaction = async (req, res, next) => {
     }
   }
 };
+
+exports.getTransactions = async (req, res, next) => {
+  try {
+    const user = User.findById(req.userId);
+    console.log(user);
+  } catch (err) {
+    console.log(err);
+  }
+};

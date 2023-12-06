@@ -1,0 +1,66 @@
+.transactions-header a {
+  background-color: green;
+  color: white;
+  font-size: 24px;
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.transactions-header {
+  margin-bottom: 25px;
+}
+
+.transactions {
+  margin-inline: 15px;
+  border-radius: 15px;
+  border: 3px solid black;
+  font-size: 24px;
+}
+
+.transactions header,
+.transactions footer {
+  background-color: #757575;
+  height: 45px;
+  color: white;
+}
+
+.transactions header p,
+.transactions footer p {
+  padding-top: 5px;
+  margin-top: 0;
+}
+
+.transactions header {
+  margin-bottom: 25px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.transactions footer {
+  margin-top: 25px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.goodsTransactions {
+  background-color: #00c853;
+  display: grid;
+  grid-template-columns: 20% 20% 20% 20% 20%;
+  margin-inline: 3px;
+  border: 2px solid black;
+  font-weight: 550;
+  margin-bottom: 5px;
+}
+
+.paymentTransactions {
+  background-color: rgb(199, 99, 85);
+  display: grid;
+  grid-template-columns: 20% 30% 30% 20%;
+  margin-inline: 3px;
+  border: 2px solid black;
+  font-weight: 550;
+  margin-bottom: 5px;
+}

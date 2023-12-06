@@ -35,9 +35,8 @@ exports.login = async (req, res, next) => {
     res
       .status(200)
       .cookie("token", token, {
-        expires: new Date(Date.now() + 360000),
+        expires: new Date(Date.now() + 3600000),
         httpOnly: true,
-        sameSite: "None",
       })
       .json({
         userId: currentUser._id.toString(),
@@ -115,9 +114,8 @@ exports.adminLogin = async (req, res, next) => {
     res
       .status(200)
       .cookie("token", token, {
-        expires: 3600000,
+        expires: new Date(Date.now() + 3600000),
         httpOnly: true,
-        SameSite: "None",
       })
       .json({
         userId: currentAdmin._id.toString(),
