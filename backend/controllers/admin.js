@@ -27,7 +27,6 @@ exports.addUser = async (req, res, next) => {
     const existingUser = await User.findOne({ username });
 
     if (!existingUser) {
-      console.log("radi");
       const hashedPassword = await bcrypt.hash(password, 12);
       console.log(hashedPassword);
 
@@ -37,7 +36,6 @@ exports.addUser = async (req, res, next) => {
         password: hashedPassword,
       });
     } else {
-      console.log("ne radi");
       user = existingUser;
     }
 
@@ -72,6 +70,7 @@ exports.addUser = async (req, res, next) => {
 };
 
 exports.acceptGoodsTransaction = async (req, res, next) => {
+  const _id = req.body._id;
   const username = req.body.username;
   const goods = req.body.goods;
   const quantity = req.body.quantity;
@@ -82,16 +81,22 @@ exports.acceptGoodsTransaction = async (req, res, next) => {
 
     console.log(user);
     user.transactions.push({
-      goods: goods,
-      price: price,
-      quantity: quantity,
+      _id,
+      goods,
+      price,
+      quantity,
       debt: price * quantity,
     });
+
+    user.requests = user.requests.filter(
+      (request) => _id.toString() !== request._id.toString()
+    );
 
     const result = await user.save();
 
     const transaction = new Transaction({
-      price: price,
+      _id,
+      price,
       debt: price,
       creator: result._id,
     });

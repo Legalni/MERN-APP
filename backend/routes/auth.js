@@ -3,6 +3,7 @@ const { body } = require("express-validator");
 
 const User = require("../models/user");
 const authController = require("../controllers/auth");
+const isLoggedIn = require("../middleware/is-logged-in");
 
 const router = express.Router();
 
@@ -44,5 +45,18 @@ router.post(
   ],
   authController.adminLogin
 );
+
+router.put(
+  "/change-data",
+  [
+    body("email").trim().isEmail(),
+    body("oldPassword").trim().isLength({ min: 5 }),
+    body("password").trim().isLength({ min: 5 }),
+    body("confirmedPassword").trim().isLength({ min: 5 }),
+  ],
+  authController.changeData
+);
+
+router.post("/checkAuth", isLoggedIn, authController.checkAuth);
 
 module.exports = router;

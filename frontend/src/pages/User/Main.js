@@ -5,7 +5,7 @@ import { useNavigate, useResolvedPath } from "react-router-dom";
 
 function MainPage(props) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [debt, setDebt] = useState(0);
   const goodsRef = useRef();
   const quantityRef = useRef();
   const priceRef = useRef();
@@ -24,8 +24,17 @@ function MainPage(props) {
         return res.json();
       })
       .then((resData) => {
+        const transactions = resData.user.transactions;
+
+        const debt = transactions.reduce(
+          (acc, transaction) => acc + transaction.debt,
+          0
+        );
+
+        console.log(debt);
+
         setUser(resData.user);
-        setToken(resData.token);
+        setDebt(debt);
       })
       .catch((err) => console.log("nece fetch"));
   }, []);
@@ -97,7 +106,7 @@ function MainPage(props) {
           <h2>Korisnik: {user.username}</h2>
           <div>
             <form className="userLogout">
-              <h2>Dug: 873033 din</h2>
+              <h2>Dug: {debt} din</h2>
               <button
                 onClick={(e) => {
                   props.onLogout(e);

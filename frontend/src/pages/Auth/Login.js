@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import "./Login.css";
 
@@ -8,6 +8,23 @@ import { required, length, isEmail } from "../../util/validators";
 import Input from "../../components/Input";
 
 function Login(props) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch("http://localhost:8080/auth/checkAuth", {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.isAuthenticated) {
+          navigate(resData.isAdmin ? "/admin/allUsers" : "/main");
+        } else {
+          navigate("/login");
+        }
+      });
+  }, [navigate]);
+
   const initialEmail = {
     value: "",
     valid: false,
@@ -81,7 +98,7 @@ function Login(props) {
         </form>
         <div className="user-options">
           <Link to="/signup">Registrujte se</Link>
-          <Link to="/change-informations">Promena podataka</Link>
+          <Link to="/auth-info-change">Promena podataka</Link>
         </div>
       </div>
     </Auth>

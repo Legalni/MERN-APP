@@ -46,6 +46,10 @@ exports.login = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
+    res
+      .status(200)
+      .json({ error: { message: err.message, status: err.statusCode } });
   }
 };
 
@@ -80,6 +84,10 @@ exports.signup = async (req, res, next) => {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
+    res
+      .status(200)
+      .json({ error: { message: err.message, status: err.statusCode } });
   }
 };
 
@@ -97,7 +105,7 @@ exports.adminLogin = async (req, res, next) => {
     currentAdmin = admin;
     const isEqual = await bcrypt.compare(password, admin.password);
     if (!isEqual) {
-      const error = new Error("Uneli ste pogresnu lozinku");
+      const error = new Error("Uneli ste pogrešnu lozinku");
       error.statusCode = 401;
       throw error;
     }
@@ -122,10 +130,85 @@ exports.adminLogin = async (req, res, next) => {
         token: token,
       });
   } catch (err) {
+    console.log(err);
     if (!err.statusCode) {
       err.statusCode = 500;
     }
+
+    res
+      .status(200)
+      .json({ error: { message: err.message, status: err.statusCode } });
   }
 };
 
-const generateToken = async (user, statusCode, res) => {};
+exports.changeData = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ error: "Validacija neuspesna" });
+  }
+
+  const email = req.body.email;
+  const newEmail = req.body.newEmail;
+  const oldPassword = req.body.oldPassword;
+  const password = req.body.password;
+  const confirmedPassword = req.body.confirmedPassword;
+
+  console.log(email, newEmail);
+
+  try {
+    if (oldPassword === password || oldPassword === confirmedPassword) {
+      throw new Error("Lozinka ne može biti ista kao prethodna.");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new Error("Ne postoji korisnik sa tim e-mailom");
+    }
+
+    const isEqualPassword = await bcrypt.compare(oldPassword, user.password);
+
+    if (isEqualPassword && password === confirmedPassword) {
+      const hashedPassword = await bcrypt.hash(password, 12);
+
+      const updatedUser = await User.findOneAndUpdate(
+        { email },
+        {
+          email: newEmail ? newEmail : email,
+          password: hashedPassword,
+        }
+      );
+
+      res.status(200).json({
+        message: "Podaci su uspesno azurirani.",
+        userId: updatedUser._id.toString(),
+      });
+    } else {
+      throw new Error(
+        "Lozinke se ne poklapaju ili stara lozinka nije ispravna."
+      );
+    }
+  } catch (err) {
+    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+
+    res
+      .status(err.statusCode)
+      .json({ error: { message: err.message, status: err.statusCode } });
+  }
+};
+
+exports.checkAuth = async (req, res, next) => {
+  const user = await User.findById(req.userId);
+  const admin = await Admin.findById(req.userId);
+
+  if (user) {
+    return res.json({ isAuthenticated: true, isAdmin: false });
+  } else if (admin) {
+    return res.json({ isAuthenticated: true, isAdmin: true });
+  } else {
+    return res.json({ isAuthenticated: false });
+  }
+};

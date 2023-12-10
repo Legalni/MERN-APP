@@ -6,6 +6,7 @@ const AdminMain = (props) => {
   const [isShown, setIsShown] = useState(false);
   const [users, setUsers] = useState([]);
   const [hasRequests, setHasRequests] = useState(false);
+  const [isExpanded, setIsExpanded] = useState("expanded");
   const usernameRef = useRef();
   const goodsRef = useRef();
   const quantityRef = useRef();
@@ -90,6 +91,7 @@ const AdminMain = (props) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        _id: data._id,
         username: data.username,
         goods: data.goods,
         quantity: data.quantity,
@@ -98,6 +100,16 @@ const AdminMain = (props) => {
       credentials: "include",
     }).then((res) => res.json());
   };
+
+  setInterval(() => {
+    if (hasRequests && !isShown) {
+      if (isExpanded === "expanded") {
+        setIsExpanded("");
+      } else {
+        setIsExpanded("expanded");
+      }
+    }
+  }, 2000);
 
   return (
     <>
@@ -120,7 +132,7 @@ const AdminMain = (props) => {
           </div>
           <div className="show-requests">
             <button
-              className={`${hasRequests && !isShown && "expanded"}`}
+              className={`${hasRequests && !isShown ? isExpanded : ""}`}
               onClick={showRequestsHandler}
             >
               Prikazi zahteve
@@ -148,6 +160,7 @@ const AdminMain = (props) => {
                                   goods: request.goods,
                                   quantity: request.quantity,
                                   price: request.price,
+                                  _id: request._id,
                                 })
                               }
                             >
