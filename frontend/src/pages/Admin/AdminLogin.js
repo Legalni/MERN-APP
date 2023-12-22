@@ -5,8 +5,13 @@ import { useState } from "react";
 import { required, length, isEmail } from "../../util/validators";
 
 import "./AdminLogin.css";
+import { useAuth } from "../../context/auth-context";
 
-const AdminLogin = (props) => {
+const AdminLogin = () => {
+  const ctx = useAuth();
+
+  const { error, setError, navigate } = ctx;
+
   const initialEmail = {
     value: "",
     valid: false,
@@ -47,23 +52,61 @@ const AdminLogin = (props) => {
     });
   };
 
+  const adminLoginHandler = (event) => {
+    event.preventDefault();
+
+    if (!email.valid && !password.valid) {
+      return setError("Unesite ispravne podatke");
+    }
+    if (!email.valid) {
+      return setError("Unesite ispravnu e-mail adresu");
+    }
+    if (!password.valid) {
+      return setError("Unesite ispravnu lozinku");
+    }
+
+    fetch(`http://localhost:8080/auth/admin-login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      }),
+      credentials: "include",
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((resData) => {
+        if (resData.error) {
+          setError(resData.error.message);
+        } else {
+          setError(null);
+          navigate("/admin/allUsers");
+        }
+      })
+      .catch((err) => {
+        setError("Doslo je do greske. Pokusajte ponovo.");
+      });
+  };
+
   return (
     <Auth>
       <div className="admin-login">
         <h2>Admin Prijava</h2>
-        {props.error && <p className="error">{props.error}</p>}
-        <form
-          onSubmit={(e) => {
-            props.onLogin(e, { email, password }, true);
-          }}
-        >
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={adminLoginHandler}>
           <Input
             label="E-mail"
             placeholder="test@test.com"
             type="email"
             onChange={emailChangeHandler}
             value={email.value}
-            valid={props.valid}
+            valid={password.valid}
           />
           <Input
             label="Password"
@@ -71,7 +114,7 @@ const AdminLogin = (props) => {
             type="password"
             onChange={passwordChangeHandler}
             value={password.value}
-            valid={props.valid}
+            valid={password.valid}
           />
           <button>Prijavi se</button>
         </form>

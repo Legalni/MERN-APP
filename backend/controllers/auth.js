@@ -144,7 +144,7 @@ exports.adminLogin = async (req, res, next) => {
 exports.changeData = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({ error: "Validacija neuspesna" });
+    return res.status(200).json({ error: "Validacija neuspesna" });
   }
 
   const email = req.body.email;
@@ -152,8 +152,6 @@ exports.changeData = async (req, res, next) => {
   const oldPassword = req.body.oldPassword;
   const password = req.body.password;
   const confirmedPassword = req.body.confirmedPassword;
-
-  console.log(email, newEmail);
 
   try {
     if (oldPassword === password || oldPassword === confirmedPassword) {
@@ -195,20 +193,28 @@ exports.changeData = async (req, res, next) => {
     }
 
     res
-      .status(err.statusCode)
+      .status(200)
       .json({ error: { message: err.message, status: err.statusCode } });
   }
 };
 
 exports.checkAuth = async (req, res, next) => {
-  const user = await User.findById(req.userId);
-  const admin = await Admin.findById(req.userId);
+  try {
+    const user = await User.findById(req.userId);
+    const admin = await Admin.findById(req.userId);
 
-  if (user) {
-    return res.json({ isAuthenticated: true, isAdmin: false });
-  } else if (admin) {
-    return res.json({ isAuthenticated: true, isAdmin: true });
-  } else {
-    return res.json({ isAuthenticated: false });
+    if (user) {
+      console.log("Authenticated user");
+      return res.json({ isAuthenticated: true, isAdmin: false });
+    } else if (admin) {
+      console.log("Authenticated admin");
+      return res.json({ isAuthenticated: true, isAdmin: true });
+    } else {
+      return res.json({ isAuthenticated: false, isAdmin: false });
+    }
+  } catch (err) {
+    console.error(err);
+    console.log("Server error");
+    return res.status(200).json({ isAuthenticated: false, isAdmin: false });
   }
 };

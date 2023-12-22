@@ -25,12 +25,14 @@ const userSchema = new Schema({
       },
       price: {
         type: Number,
+        required: true,
       },
       quantity: {
         type: Number,
       },
       debt: {
         type: Number,
+        required: true,
       },
     },
     ,
@@ -46,12 +48,18 @@ const userSchema = new Schema({
       },
       price: {
         type: Number,
+        required: true,
       },
       quantity: {
         type: Number,
       },
       debt: {
         type: Number,
+        required: true,
+      },
+      createdAt: {
+        type: Date,
+        required: true,
       },
     },
   ],

@@ -110,9 +110,9 @@
   display: flex;
   justify-content: center;
   background-color: #00c853;
-  width: 310px;
-  height: 70px;
   text-align: center;
+  padding: 20px;
+  margin-inline: 10px;
   font-size: 24px;
   font-weight: bolder;
   align-items: center;
@@ -120,6 +120,7 @@
   border: 2px solid darkgreen;
   cursor: pointer;
   margin-bottom: 20px;
+  text-decoration: none;
 }
 
 .user a {
@@ -168,4 +169,12 @@
   height: 35px;
   border-radius: 5px;
   margin: auto;
+}
+
+.accepted {
+  background-color: rgb(5, 117, 5);
+}
+
+.rejected {
+  background-color: rgb(144, 11, 11);
 }

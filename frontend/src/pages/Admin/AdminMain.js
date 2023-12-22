@@ -1,12 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import "./AdminMain.css";
+import { useAuth } from "../../context/auth-context";
 
-const AdminMain = (props) => {
+const AdminMain = () => {
+  const ctx = useAuth();
+
+  const { navigate } = ctx;
+
   const [isShown, setIsShown] = useState(false);
   const [users, setUsers] = useState([]);
   const [hasRequests, setHasRequests] = useState(false);
-  const [isExpanded, setIsExpanded] = useState("expanded");
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [transactionEvent, setTransactionEvent] = useState("none");
   const usernameRef = useRef();
   const goodsRef = useRef();
   const quantityRef = useRef();
@@ -23,19 +29,26 @@ const AdminMain = (props) => {
         return res.json();
       })
       .then((resData) => {
-        console.log(resData);
         setUsers([...new Set(resData.users)]);
 
         const userHasRequests = resData.users.some(
           (user) => user.requests.length > 0
         );
         setHasRequests(userHasRequests);
+        if (userHasRequests && !isShown) {
+          const intervalId = setInterval(() => {
+            setIsExpanded((prevExpanded) => !prevExpanded);
+          }, 1500);
+
+          return () => clearInterval(intervalId);
+        }
       })
       .catch((err) => console.log("nece fetch"));
   }, []);
 
   const showRequestsHandler = (event) => {
     event.preventDefault();
+
     setIsShown((prevState) => !prevState);
   };
 
@@ -49,7 +62,7 @@ const AdminMain = (props) => {
 
     const doesUserExist = users.some((user) => user.username === username);
 
-    fetch("http://localhost:8080/admin/add-user", {
+    fetch("http://localhost:8080/admin/post-add-transaction", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,8 +96,6 @@ const AdminMain = (props) => {
   };
 
   const acceptRequestHandler = (data) => {
-    console.log(data);
-
     fetch("http://localhost:8080/admin/add-transaction", {
       method: "POST",
       headers: {
@@ -98,18 +109,81 @@ const AdminMain = (props) => {
         price: data.price,
       }),
       credentials: "include",
-    }).then((res) => res.json());
+    })
+      .then((res) => res.json())
+      .then((resData) => {
+        setTransactionEvent("accepted");
+
+        setTimeout(() => {
+          setUsers((prevUsers) => {
+            const updatedUsers = prevUsers.map((user) => {
+              user.requests = user.requests.filter((request) => {
+                return (
+                  request._id.toString() !== resData.transactionId.toString()
+                );
+              });
+              return user;
+            });
+            return updatedUsers;
+          });
+          setTransactionEvent("none");
+          setTimeout(() => {
+            setHasRequests(users.some((user) => user.requests.length > 0));
+          }, 100);
+        }, 500);
+      });
   };
 
-  setInterval(() => {
-    if (hasRequests && !isShown) {
-      if (isExpanded === "expanded") {
-        setIsExpanded("");
-      } else {
-        setIsExpanded("expanded");
-      }
-    }
-  }, 2000);
+  const rejectRequestHandler = (data) => {
+    console.log(data.username);
+
+    fetch(`http://localhost:8080/admin/reject-request/${data._id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: data.username }),
+      credentials: "include",
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((resData) => {
+        setTransactionEvent("rejected");
+
+        setTimeout(() => {
+          setUsers((prevUsers) => {
+            const updatedUsers = prevUsers.map((user) => {
+              user.requests = user.requests.filter((request) => {
+                return (
+                  request._id.toString() !== resData.transactionId.toString()
+                );
+              });
+              return user;
+            });
+            return updatedUsers;
+          });
+          setTransactionEvent("none");
+          setTimeout(() => {
+            setHasRequests(users.some((user) => user.requests.length > 0));
+          }, 100);
+        }, 500);
+      });
+  };
+
+  const adminLogoutHandler = (event) => {
+    event.preventDefault();
+
+    fetch(`http://localhost:8080/admin/logout`, {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then(() => {
+        navigate("/admin/login");
+      })
+      .catch((err) => console.log("Ne mozete se izlogovati"));
+  };
 
   return (
     <>
@@ -122,24 +196,24 @@ const AdminMain = (props) => {
             ></div>
           </div>
           <div className="logout">
-            <button
-              onClick={(e) => {
-                props.onLogout(e, true);
-              }}
-            >
-              Odjavi se
-            </button>
+            <button onClick={adminLogoutHandler}>Odjavi se</button>
           </div>
           <div className="show-requests">
             <button
-              className={`${hasRequests && !isShown ? isExpanded : ""}`}
+              className={`${
+                hasRequests && !isShown && isExpanded ? "expanded" : ""
+              }`}
               onClick={showRequestsHandler}
             >
               Prikazi zahteve
             </button>
           </div>
           {isShown && (
-            <div className="requestsContainer">
+            <div
+              className={`requestsContainer ${
+                transactionEvent === "accepted" ? "accepted" : ""
+              } ${transactionEvent === "rejected" ? "rejected" : ""}`}
+            >
               <h1>Zahtevi:</h1>
               <div className="requestsList">
                 {users.map((user) => {
@@ -169,7 +243,12 @@ const AdminMain = (props) => {
                             <button
                               type="submit"
                               className="declineRequest"
-                              // onClick={declineRequestHandler}
+                              onClick={() =>
+                                rejectRequestHandler({
+                                  username: user.username,
+                                  _id: request._id,
+                                })
+                              }
                             >
                               ❌
                             </button>
@@ -180,8 +259,29 @@ const AdminMain = (props) => {
                             <p>uplata</p>
                             <p>uplata</p>
                             <p>{request.price} din</p>
-                            <button className="confirmRequest">✔️</button>
-                            <button className="declineRequest">❌</button>
+                            <button
+                              className="confirmRequest"
+                              onClick={() =>
+                                acceptRequestHandler({
+                                  username: user.username,
+                                  price: request.price,
+                                  _id: request._id,
+                                })
+                              }
+                            >
+                              ✔️
+                            </button>
+                            <button
+                              className="declineRequest"
+                              onClick={() =>
+                                rejectRequestHandler({
+                                  username: user.username,
+                                  _id: request._id,
+                                })
+                              }
+                            >
+                              ❌
+                            </button>
                           </div>
                         );
                       })}
@@ -221,11 +321,13 @@ const AdminMain = (props) => {
           <div className="users">
             {users.map((user) => {
               return (
-                <div className="user" key={user._id}>
-                  <Link to={`/admin/user/${user.username}`}>
-                    {user.username}
-                  </Link>
-                </div>
+                <Link
+                  className="user"
+                  key={user._id}
+                  to={`/admin/user/${user.username}`}
+                >
+                  {user.username}
+                </Link>
               );
             })}
           </div>

@@ -13,13 +13,7 @@ exports.getUserInformations = async (req, res, next) => {
 exports.postTransaction = async (req, res, next) => {
   if (!req.body.goods) {
     const price = -Number(req.body.price);
-    const transaction = new Transaction({
-      price: price,
-      debt: price,
-      creator: req.userId,
-    });
     try {
-      await transaction.save();
       const user = await User.findById(req.userId);
       user.requests.push({
         price: price,
@@ -35,15 +29,7 @@ exports.postTransaction = async (req, res, next) => {
     const goods = req.body.goods;
     const quantity = req.body.quantity;
     const price = req.body.price;
-    const transaction = new Transaction({
-      goods: goods,
-      price: price,
-      quantity: quantity,
-      debt: price * quantity,
-      creator: req.userId,
-    });
     try {
-      await transaction.save();
       const user = await User.findById(req.userId);
       user.requests.push({
         goods: goods,

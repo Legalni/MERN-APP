@@ -22,7 +22,7 @@ const transactionSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: { createdAt: true, updatedAt: false } }
 );
 
 module.exports = mongoose.model("Transaction", transactionSchema);

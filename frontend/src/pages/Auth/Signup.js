@@ -5,8 +5,13 @@ import "./Signup.css";
 
 import Auth from "./Auth";
 import { required, length, isEmail } from "../../util/validators";
+import { useAuth } from "../../context/auth-context";
 
-function SignupPage(props) {
+function SignupPage() {
+  const ctx = useAuth();
+
+  const { error, setError, navigate } = ctx;
+
   const [username, setUsername] = useState({
     value: "",
     valid: false,
@@ -68,21 +73,57 @@ function SignupPage(props) {
     });
   };
 
+  const signupHandler = (event) => {
+    event.preventDefault();
+
+    if (username.valid) {
+      return setError("Unesite ispravno korisnicko ime");
+    }
+
+    if (email.valid) {
+      return setError("Unesite ispravan e-mail");
+    }
+
+    if (password.valid || confirmedPassword.valid) {
+      return setError("Unesite ispravnu lozinku");
+    }
+
+    fetch("http://localhost:8080/auth/signup", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username.value,
+        email: email.value,
+        password: password.value,
+        confirmedPassword: confirmedPassword.value,
+      }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((resData) => {
+        if (resData.error) {
+          setError(resData.error.message);
+        } else {
+          setError(null);
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        setError("Doslo je do greske. Pokusajte ponovo.");
+      });
+  };
+
   return (
     <Auth>
       <div className="signup">
         <h1>Registrujte se</h1>
-        {props.error && <p className="error">{props.error}</p>}
-        <form
-          onSubmit={(e) =>
-            props.onSignup(e, {
-              username,
-              email,
-              password,
-              confirmedPassword,
-            })
-          }
-        >
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={signupHandler}>
           <div className="username">
             <p>Korisnicko Ime</p>
             <input

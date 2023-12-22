@@ -6,24 +6,12 @@ import "./Login.css";
 import Auth from "./Auth";
 import { required, length, isEmail } from "../../util/validators";
 import Input from "../../components/Input";
+import { useAuth } from "../../context/auth-context";
 
-function Login(props) {
-  const navigate = useNavigate();
+function Login() {
+  const ctx = useAuth();
 
-  useEffect(() => {
-    fetch("http://localhost:8080/auth/checkAuth", {
-      method: "POST",
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((resData) => {
-        if (resData.isAuthenticated) {
-          navigate(resData.isAdmin ? "/admin/allUsers" : "/main");
-        } else {
-          navigate("/login");
-        }
-      });
-  }, [navigate]);
+  const { error, setError, navigate } = ctx;
 
   const initialEmail = {
     value: "",
@@ -65,26 +53,64 @@ function Login(props) {
     });
   };
 
+  const loginHandler = (event) => {
+    event.preventDefault();
+
+    if (!email.valid && !password.valid) {
+      return setError("Unesite ispravne podatke");
+    }
+    if (!email.valid) {
+      return setError("Unesite ispravnu e-mail adresu");
+    }
+    if (!password.valid) {
+      return setError("Unesite ispravnu lozinku");
+    }
+
+    fetch(`http://localhost:8080/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      }),
+      credentials: "include",
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((resData) => {
+        if (resData.error) {
+          setError(resData.error.message);
+        } else {
+          setError(null);
+          navigate("/main");
+        }
+      })
+      .catch((err) => {
+        setError("Doslo je do greske. Pokusajte ponovo.");
+      });
+  };
+
   return (
     <Auth>
-      <a className="admin-link" href="admin/login">
+      <Link to="/admin/login" className="admin-link">
         Admin
-      </a>
+      </Link>
       <div className="login">
         <h2>Prijavite se</h2>
-        {props.error && <p className="error">{props.error}</p>}
-        <form
-          onSubmit={(e) => {
-            props.onLogin(e, { email, password });
-          }}
-        >
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={loginHandler}>
           <Input
             label="E-mail"
             placeholder="test@test.com"
             type="email"
             onChange={emailChangeHandler}
             value={email.value}
-            valid={props.valid}
+            valid={email.valid}
           />
           <Input
             label="Password"
@@ -92,7 +118,7 @@ function Login(props) {
             type="password"
             onChange={passwordChangeHandler}
             value={password.value}
-            valid={props.valid}
+            valid={password.valid}
           />
           <button>Prijavi se</button>
         </form>

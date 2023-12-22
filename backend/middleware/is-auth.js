@@ -2,23 +2,22 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
   const token = req.cookies.token;
+
   if (!token) {
-    const error = new Error("Not authenticated.");
-    error.statusCode = 401;
-    throw error;
+    return res.status(200).json({ isAuthenticated: false, isAdmin: false });
   }
 
   let decodedToken;
   try {
     decodedToken = jwt.verify(token, "somesupersecretsecret");
   } catch (err) {
-    err.statusCode = 500;
-    throw err;
+    return res.status(200).json({ isAuthenticated: false, isAdmin: false });
   }
   if (!decodedToken) {
-    const error = new Error("Not authenticated.");
-    error.statusCode = 401;
-    throw error;
+    return res.status(200).json({
+      isAuthenticated: false,
+      isAdmin: false,
+    });
   }
   req.userId = decodedToken.userId;
   return next();

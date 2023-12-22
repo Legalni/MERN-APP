@@ -5,8 +5,13 @@ import "./DataChange.css";
 
 import Auth from "./Auth";
 import { required, length, isEmail } from "../../util/validators";
+import { useAuth } from "../../context/auth-context";
 
 function DataChangePage(props) {
+  const ctx = useAuth();
+
+  const { error, setError, navigate } = ctx;
+
   const [email, setEmail] = useState({
     value: "",
     valid: false,
@@ -83,22 +88,54 @@ function DataChangePage(props) {
     });
   };
 
+  const dataChangeHandler = (event) => {
+    event.preventDefault();
+
+    if (email.valid) {
+      return setError("Unesite ispravan e-mail");
+    }
+
+    if (oldPassword.valid || password.valid || confirmedPassword.valid) {
+      return setError("Unesite ispravnu lozinku");
+    }
+
+    fetch("http://localhost:8080/auth/change-data", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email.value,
+        newEmail: newEmail?.value,
+        oldPassword: oldPassword.value,
+        password: password.value,
+        confirmedPassword: confirmedPassword.value,
+      }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((resData) => {
+        if (resData.error) {
+          setError(resData.error.message);
+        } else {
+          setError(null);
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        setError("Doslo je do greske. Pokusajte ponovo.");
+      });
+  };
+
   return (
     <Auth>
       <div className="signup">
         <h1>Promena podataka</h1>
-        {/* {props.error && <p className="error">{props.error}</p>} */}
-        <form
-          onSubmit={(e) => {
-            props.onChangeData(e, {
-              email,
-              newEmail,
-              oldPassword,
-              password,
-              confirmedPassword,
-            });
-          }}
-        >
+        {props.error && <p className="error">{props.error}</p>}
+        <form onSubmit={dataChangeHandler}>
           <div className="email">
             <p>Email</p>
             <input
