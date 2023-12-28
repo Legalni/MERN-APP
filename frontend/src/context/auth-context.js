@@ -10,38 +10,33 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   // useEffect(() => {
-  //   fetch("http://localhost:8080/auth/checkAuth", {
-  //     method: "POST",
+  //   fetch("http://localhost:8080/auth/status", {
   //     credentials: "include",
   //   })
-  //     .then((res) => {
-  //       return res.json();
-  //     })
+  //     .then((res) => res.json())
   //     .then((data) => {
-  //       // if (data.isAuthenticated) {
-  //       //   if (data.isAdmin) {
-  //       //     navigate("/admin/allUsers");
-  //       //   } else {
-  //       //     navigate("/main");
-  //       //   }
-  //       // }
-  //       // if (
-  //       //   !data.isAuthenticated &&
-  //       //   !window.location.pathname.startsWith("/login")
-  //       // ) {
-  //       //   navigate("/login");
-  //       // }
+  //       console.log(data);
+  //       if (data.isAuthenticated) {
+  //         if (data.isAdmin) {
+  //           // navigate("/admin/allUsers");
+  //           setIsLoggedIn(true);
+  //           setIsAdmin(true);
+  //         } else {
+  //           setIsLoggedIn(true);
+  //           setIsAdmin(false);
+  //         }
+  //       } else {
+  //         setIsLoggedIn(false);
+  //       }
   //     })
   //     .catch((error) => {
   //       console.error("Error checking authentication:", error);
   //       // Ovde možete postaviti stanje ako dođe do greške
   //     });
-  // }, [navigate]);
+  // }, []);
 
   const value = {
     error,

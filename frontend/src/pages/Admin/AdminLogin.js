@@ -106,7 +106,7 @@ const AdminLogin = () => {
             type="email"
             onChange={emailChangeHandler}
             value={email.value}
-            valid={password.valid}
+            valid={email.valid}
           />
           <Input
             label="Password"

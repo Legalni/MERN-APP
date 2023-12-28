@@ -87,6 +87,8 @@ function Login() {
           setError(resData.error.message);
         } else {
           setError(null);
+          // setIsLoggedIn(true);
+          // setIsAdmin(false);
           navigate("/main");
         }
       })
@@ -97,9 +99,9 @@ function Login() {
 
   return (
     <Auth>
-      <Link to="/admin/login" className="admin-link">
+      <a href="/admin/login" className="admin-link">
         Admin
-      </Link>
+      </a>
       <div className="login">
         <h2>Prijavite se</h2>
         {error && <p className="error">{error}</p>}

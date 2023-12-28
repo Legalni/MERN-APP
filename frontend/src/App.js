@@ -9,40 +9,32 @@ import UserProfile from "./pages/Admin/UserProfile";
 import Transactions from "./pages/Admin/Transactions";
 import DataChangePage from "./pages/Auth/DataChange";
 import { AuthProvider, useAuth } from "./context/auth-context";
+import Secret from "./pages/Auth/Secret";
 
 function App() {
+  const [role, setRole] = useState(null);
   const ctx = useAuth();
   const { setError, navigate } = ctx;
 
-  useEffect(() => {
-    setError(null);
-
-    fetch("http://localhost:8080/auth/status", {
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((resData) => {
-        if (!resData.isAuthenticated) {
-          navigate("/login");
-        } else if (resData.isAdmin) {
-          navigate("/admin/allUsers");
-        } else {
-          navigate("/main");
-        }
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/main" element={<MainPage />} />
-      <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/auth-info-change" element={<DataChangePage />} />
-      <Route path="/admin/user/:username" element={<UserProfile />} />
-      <Route path="/admin/transactions" element={<Transactions />} />
-      <Route path="/admin/allUsers" element={<AdminMain />} />
+      <Route path="*" element={<Secret setRole={setRole} role={role} />} />
+      {!role && (
+        <>
+          <Route path="/login" exact element={<Login />} />
+          <Route path="/admin/login" exact element={<AdminLogin />} />
+          <Route path="/signup" exact element={<SignupPage />} />
+          <Route path="/auth-info-change" exact element={<DataChangePage />} />
+        </>
+      )}
+      {role === "user" && <Route path="/main" exact element={<MainPage />} />}
+      {role === "admin" && (
+        <>
+          <Route path="/admin/user/:username" exact element={<UserProfile />} />
+          <Route path="/admin/transactions" exact element={<Transactions />} />
+          <Route path="/admin/allUsers" exact element={<AdminMain />} />{" "}
+        </>
+      )}
     </Routes>
   );
 }

@@ -13,7 +13,7 @@ function MainPage() {
 
   const ctx = useAuth();
 
-  const navigate = ctx.navigate;
+  const { navigate, setIsLoggedIn, setIsAdmin } = ctx;
 
   useEffect(() => {
     fetch("http://localhost:8080/user/main", {
